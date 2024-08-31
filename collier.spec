@@ -10,18 +10,15 @@ BuildRequires: gmake cmake
 sed -i 's;add_definitions(-Dcollierdd -DSING);add_definitions(-Dcollierdd -DSING -fPIC);g' ./CMakeLists.txt
 
 %build
-rm -rf build && mkdir build && cd build
-cmake ../ \
+rm -rf build && mkdir build
+cmake -S . -B build \
   -DCMAKE_INSTALL_PREFIX=%{i} \
   -DCMAKE_BUILD_TYPE=Release \
   -Dstatic=ON \
   -DCMAKE_Fortran_FLAGS=-fPIC
-
-make -j1
+cmake --build build %{makeprocesses}
 
 %install
-mkdir -p %{i}/lib %{i}/include
-cp libcollier.a %{i}/lib
-cp modules/*.mod %{i}/include/
-
-
+cmake --install build
+sed -i 's;^.*set(COLLIER_LIBRARY_DIR.*$;get_filename_component(COLLIER_LIBRARY_DIR "${CMAKE_CURRENT_LIST_DIR}/../../lib" ABSOLUTE);' %{i}/lib/cmake/collierConfig.cmake
+sed -i 's;^.*set(COLLIER_INCLUDE_DIR.*$;get_filename_component(COLLIER_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../include" ABSOLUTE);' %{i}/lib/cmake/collierConfig.cmake

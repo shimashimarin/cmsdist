@@ -1,5 +1,7 @@
 <tool name="collier" version="@TOOL_VERSION@">
   <client>
     <environment name="COLLIER_BASE" default="@TOOL_ROOT@"/>
+    <environment name="LIBDIR" default="$COLLIER_BASE/lib"/>
+    <environment name="INCLUDE" default="$COLLIER_BASE/include"/>
   </client>
 </tool>
