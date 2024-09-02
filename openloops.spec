@@ -50,7 +50,12 @@ done
 ./openloops libinstall openloops-user.coll
 
 %install
-mkdir %i/{lib,proclib}
+mkdir %i/{lib,lib_src,proclib,include,scons-local}
+cp openloops %i/
 cp lib/*.so %i/lib
 cp proclib/*.so %i/proclib
+cp proclib/*.rinfo %i/proclib
 cp proclib/*.info %i/proclib
+cp include/* %i/include
+cp -r scons-local/* %i/scons-local
+cp scons %i/
