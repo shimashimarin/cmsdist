@@ -1,41 +1,32 @@
-### RPM external mcfm 6.3
+### RPM external mcfm 10.3
+
+Source: https://mcfm.fnal.gov/downloads/MCFM-%{realversion}.tar.gz
+Requires: lhapdf openmpi
+BuildRequires: gmake cmake
+Patch0: mcfm-10.3-add-install-path-option
 
 %define keep_archives true
-%define tag d2e025ce8044976b95811b1a92e802f5e4eeb5ae
-%define branch cms/%{realversion}
-%define github_user cms-externals
-Source: git+https://github.com/%github_user/%{n}.git?obj=%{branch}/%{tag}&export=%{n}-%{realversion}&output=/%{n}-%{realversion}.tgz
-
-Patch0: mcfm-6.3-opt-for-size
-
-Requires: root
 
 %prep
-%setup -q -n %{n}-%{realversion}
-
-# This patch is needed as workaround for GCC PR63304
-# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63304
-%ifarch aarch64
+%setup -q -n MCFM-%{realversion}
 %patch0 -p1
-%endif
 
 %build
-mkdir -p obj
-pushd QCDLoop
-make FC="$(which gfortran) -std=legacy"
-popd
-make FC="$(which gfortran) -std=legacy"
+rm -rf build && mkdir build
+export OMP_STACKSIZE=16000
+cmake -S . -B build \
+  -DCMAKE_INSTALL_PREFIX=%{i} \
+  -Dwith_vvamp=ON \
+  -Dwith_library=ON \
+  -Duse_internal_lhapdf=OFF \
+  -DCMAKE_PREFIX_PATH=$LHAPDF_ROOT \
+  -Dlhapdf_include_path=$LHAPDF_ROOT/include \
+  -Duse_mpi=ON \
+  -DCMAKE_C_COMPILER=mpicc \
+  -DCMAKE_CXX_COMPILER=mpic++ \
+  -DCMAKE_Fortran_COMPILER=mpifort
 
-mv %_builddir/%{n}-%{realversion}/Bin %_builddir/%{n}-%{realversion}/bin
-
-mkdir -p %_builddir/%{n}-%{realversion}/lib
-ar cr %_builddir/%{n}-%{realversion}/lib/libMCFM.a %_builddir/%{n}-%{realversion}/obj/*.o
+cmake --build build %{makeprocesses}
 
 %install
-
-rm %_builddir/%{n}-%{realversion}/bin/mcfm
-
-cp -r %_builddir/%{n}-%{realversion}/lib %{i}
-cp -r %_builddir/%{n}-%{realversion}/bin %{i}
-
-%post
+cmake --install build
