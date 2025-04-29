@@ -238,7 +238,7 @@ cd ../isl-%{islVersion}
 make %{makeprocesses}
 make install
 
-CONF_GCC_ARCH_SPEC=
+CONF_GCC_ARCH_SPEC="--enable-frame-pointer"
 %ifarch aarch64
     CONF_GCC_ARCH_SPEC="$CONF_GCC_ARCH_SPEC \
                         --enable-threads=posix --enable-initfini-array --disable-libmpx"
