@@ -1,61 +1,64 @@
-### RPM external sherpa 2.2.15
-Source: http://www.hepforge.org/archive/sherpa/SHERPA-MC-%{realversion}.tar.gz
-Requires: hepmc lhapdf blackhat sqlite python3 fastjet openmpi
-BuildRequires: mcfm swig autotools
-Patch0: sherpa-2.2.10-hepmcshort
-Patch1: sherpa-cpp20
-
-%{!?without_openloops:Requires: openloops}
+### RPM external sherpa 3.0.0
+Source: https://gitlab.com/sherpa-team/sherpa/-/archive/v%{realversion}/sherpa-v%{realversion}.tar.gz
+Requires: hepmc3 lhapdf blackhat python3 fastjet openmpi recola rivet pythia8 libzip openloops mcfm
+BuildRequires: swig
 
 %prep
-%setup -q -n SHERPA-MC-%{realversion}
-
-autoreconf -i --force
-
-# Force architecture based on %%cmsplatf
-%ifarch x86_64
-  ARCH_CMSPLATF="-m64"
-%endif
-
-%ifos darwin
-perl -p -i -e 's|-rdynamic||g' configure AddOns/Analysis/Scripts/Makefile.in
-%endif
-
-%patch0 -p1
-%patch1 -p1
+%setup -q -n sherpa-v%{realversion}
 
 %build
-export PYTHON=$(which python3)
-./configure --prefix=%i --enable-analysis --disable-silent-rules \
-            --enable-fastjet=$FASTJET_ROOT \
-            --enable-hepmc2=$HEPMC_ROOT \
-            --enable-lhapdf=$LHAPDF_ROOT \
-            --enable-blackhat=$BLACKHAT_ROOT \
-            --enable-pyext \
-            --enable-ufo \
-            ${OPENLOOPS_ROOT+--enable-openloops=$OPENLOOPS_ROOT} \
-            --enable-mpi \
-            --with-sqlite3=$SQLITE_ROOT \
-            --enable-analysis \
-            CC="mpicc" \
-            CXX="mpicxx" \
-            MPICXX="mpicxx" \
-            FC="mpifort" \
-            CXXFLAGS="-fuse-cxa-atexit $ARCH_CMSPLATF -O2 -std=c++0x -I$LHAPDF_ROOT/include -I$BLACKHAT_ROOT/include -I$RIVET_ROOT/include" \
-            LDFLAGS="-ldl -L$BLACKHAT_ROOT/lib/blackhat -L$QD_ROOT/lib"
-
-make %{makeprocesses}
+rm -rf build && mkdir build
+if [ $OPENLOOPS_ROOT ]; then
+  cmake -S . -B build \
+    -DCMAKE_INSTALL_PREFIX=%i \
+    -DSHERPA_ENABLE_MPI=ON -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpic++ -DCMAKE_Fortran_COMPILER=mpif90 \
+    -DSHERPA_ENABLE_ANALYSIS=ON \
+    -DSHERPA_ENABLE_EXAMPLES=ON \
+    -DSHERPA_ENABLE_INSTALL_LIBZIP=ON \
+    -DSHERPA_ENABLE_GZIP=ON \
+    -DSHERPA_ENABLE_HEPMC3=ON -DSHERPA_ENABLE_HEPMC3_ROOT=ON -DHEPMC3_DIR=$HEPMC3_ROOT\
+    -DSHERPA_ENABLE_INTERNAL_PDFS=OFF \
+    -DSHERPA_ENABLE_LHAPDF=ON -DLHAPDF_DIR=$LHAPDF_ROOT\
+    -DSHERPA_ENABLE_BLACKHAT=ON -DBLACKHAT_DIR=$BLACKHAT_ROOT \
+    -DSHERPA_ENABLE_OPENLOOPS=ON -DOPENLOOPS_DIR=$OPENLOOPS_ROOT \
+    -DSHERPA_ENABLE_MCFM=ON -DMCFM_DIR=$MCFM_ROOT \
+    -DSHERPA_ENABLE_ROOT=ON -DROOT_DIR=$ROOT_ROOT \
+    -DSHERPA_ENABLE_PYTHIA8=ON -DPYHIA8_DIR=$PYTHIA8_ROOT\
+    -DSHERPA_ENABLE_RECOLA=ON -DRECOLA_DIR=$RECOLA_ROOT\
+    -DSHERPA_ENABLE_RIVET=ON -DRIVET_DIR=$RIVET_ROOT\
+    -DSHERPA_ENABLE_PYTHON=ON \
+    -DSHERPA_ENABLE_UFO=ON \
+    -DSHERPA_ENABLE_THREADING=ON
+else
+  cmake -S . -B build \
+    -DCMAKE_INSTALL_PREFIX=%i \
+    -DSHERPA_ENABLE_MPI=ON -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpic++ -DCMAKE_Fortran_COMPILER=mpif90 \
+    -DSHERPA_ENABLE_ANALYSIS=ON \
+    -DSHERPA_ENABLE_EXAMPLES=ON \
+    -DSHERPA_ENABLE_INSTALL_LIBZIP=ON \
+    -DSHERPA_ENABLE_GZIP=ON \
+    -DSHERPA_ENABLE_HEPMC3=ON -DSHERPA_ENABLE_HEPMC3_ROOT=ON -DHEPMC3_DIR=$HEPMC3_ROOT\
+    -DSHERPA_ENABLE_INTERNAL_PDFS=OFF \
+    -DSHERPA_ENABLE_LHAPDF=ON -DLHAPDF_DIR=$LHAPDF_ROOT\
+    -DSHERPA_ENABLE_BLACKHAT=ON -DBLACKHAT_DIR=$BLACKHAT_ROOT \
+    -DSHERPA_ENABLE_OPENLOOPS=OFF \
+    -DSHERPA_ENABLE_MCFM=ON -DMCFM_DIR=$MCFM_ROOT \
+    -DSHERPA_ENABLE_ROOT=ON -DROOT_DIR=$ROOT_ROOT \
+    -DSHERPA_ENABLE_PYTHIA8=ON -DPYHIA8_DIR=$PYTHIA8_ROOT\
+    -DSHERPA_ENABLE_RECOLA=ON -DRECOLA_DIR=$RECOLA_ROOT\
+    -DSHERPA_ENABLE_RIVET=ON -DRIVET_DIR=$RIVET_ROOT\
+    -DSHERPA_ENABLE_PYTHON=ON \
+    -DSHERPA_ENABLE_UFO=ON \
+    -DSHERPA_ENABLE_THREADING=ON
+fi
+cmake --build build %{makeprocesses}
 
 %install
-make install
-find %{i}/lib -name '*.la' -delete
+cmake --install build
 sed -i -e 's|^#!/.*|#!/usr/bin/env python3|' %{i}/bin/Sherpa-generate-model
 
 %post
-%{relocateConfig}lib/python%{cms_python3_major_minor_version}/site-packages/ufo_interface/sconstruct_template
-%{relocateConfig}bin/make2scons
 %{relocateConfig}share/SHERPA-MC/makelibs
-%{relocateConfig}share/SHERPA-MC/sherpa-completion
 %{relocateConfig}bin/Sherpa-config
 %{relocateConfig}bin/Sherpa-generate-model
 %{relocateConfig}include/SHERPA-MC/ATOOLS/Org/CXXFLAGS*.H
