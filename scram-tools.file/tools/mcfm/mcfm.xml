@@ -1,0 +1,9 @@
+<tool name="mcfm" version="@TOOL_VERSION@">
+  <client>
+    <environment name="MCFM_BASE" default="@TOOL_ROOT@"/>
+    <environment name="LIBDIR" default="$MCFM_BASE/lib"/>
+    <environment name="INCLUDE" default="$MCFM_BASE/include"/>
+  </client>
+  <use name="lhapdf"/>
+  <use name="openmpi"/>
+</tool>
