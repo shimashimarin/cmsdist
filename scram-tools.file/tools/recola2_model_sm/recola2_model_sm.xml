@@ -1,5 +1,0 @@
-<tool name="recola2_model_sm" version="@TOOL_VERSION@" revision="1">
-  <client>
-    <environment name="RECOLA2_MODEL_SM_BASE" default="@TOOL_ROOT@"/>
-  </client>
-</tool>

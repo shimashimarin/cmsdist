@@ -1,11 +1,7 @@
 ### RPM external sherpa 3.0.1
-## INCLUDE cpp-standard
-## INCLUDE microarch_flags
-## INITENV +PATH PYTHON3PATH %{i}/${PYTHON3_LIB_SITE_PACKAGES}
 Source: git+https://gitlab.com/sherpa-team/sherpa.git?obj=master/v%{realversion}&export=%{n}-%{realversion}&output=/%{n}-%{realversion}.tgz
-Source99: scram-tools.file/tools/eigen/env
-Requires: hepmc3 lhapdf blackhat fastjet openmpi recola rivet pythia8 gosam libzip python3
-BuildRequires: cmake swig python3 py3-cython
+Requires: hepmc3 lhapdf blackhat fastjet openmpi recola rivet pythia8 gosam libzip
+BuildRequires: cmake swig
 
 %{!?without_openloops:Requires: openloops}
 
@@ -14,8 +10,6 @@ BuildRequires: cmake swig python3 py3-cython
 
 %build
 rm -rf build && mkdir build
-
-CXXFLAGS="-m64 -O3 -pthread -std=c++%{cms_cxx_standard} $CMS_EIGEN_CXX_FLAGS"
 
 cmake -S . -B build \
   -DCMAKE_INSTALL_PREFIX=%i \
@@ -34,7 +28,7 @@ cmake -S . -B build \
   -DSHERPA_ENABLE_GOSAM=ON -DGOSAM_DIR=$GOSAM_ROOT \
   -DSHERPA_ENABLE_RIVET=ON -DRIVET_DIR=$RIVET_ROOT \
   -DSHERPA_ENABLE_EWSUD=ON \
-  -DSHERPA_ENABLE_PYTHON=ON -DPYTHON_DIR=$PYTHON_ROOT \
+  -DSHERPA_ENABLE_PYTHON=OFF \
   -DSHERPA_ENABLE_UFO=ON \
   -DSHERPA_ENABLE_THREADING=ON \
   -DSHERPA_ENABLE_DIHIGGS=OFF \
@@ -42,8 +36,7 @@ cmake -S . -B build \
   -DSHERPA_ENABLE_MCFM=OFF \
   -DSHERPA_ENABLE_TESTING=OFF \
   -DSHERPA_ENABLE_INTEGRATION_TESTS=OFF \
-  -DSHERPA_ENABLE_BINRELOC=OFF \
-  -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+  -DSHERPA_ENABLE_BINRELOC=OFF
 cmake --build build %{makeprocesses}
 
 %install

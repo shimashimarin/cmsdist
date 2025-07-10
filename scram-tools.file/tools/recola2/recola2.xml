@@ -1,5 +1,0 @@
-<tool name="recola2" version="@TOOL_VERSION@" revision="1">
-  <client>
-    <environment name="RECOLA2_BASE" default="@TOOL_ROOT@"/>
-  </client>
-</tool>

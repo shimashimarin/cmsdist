@@ -4,6 +4,8 @@
   <lib name="ToolsMath"/>
   <lib name="ToolsYaml"/>
   <lib name="ToolsOrg"/>
+  <lib name="SherpaSingleEvents"/>
+  <lib name="SherpaTools"/>
   <client>
     <environment name="SHERPA_BASE" default="@TOOL_ROOT@"/>
     <environment name="BINDIR" default="$SHERPA_BASE/bin"/>
