@@ -4,7 +4,7 @@ Source: https://gitlab.cern.ch/hepmc/HepMC3/-/archive/%{realversion}/HepMC3-%{re
 
 BuildRequires: cmake
 
-%define drop_files %i/share
+%define drop_files %i/share/doc
 
 %prep
 %setup -q -n HepMC3-%{realversion}
