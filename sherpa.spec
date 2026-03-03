@@ -1,6 +1,6 @@
 ### RPM external sherpa 3.0.3
 Source: git+https://gitlab.com/sherpa-team/sherpa.git?obj=master/v%{realversion}&export=%{n}-%{realversion}&output=/%{n}-%{realversion}.tgz
-Requires: hepmc3 lhapdf blackhat fastjet openmpi recola rivet pythia8 gosam libzip
+Requires: hepmc3 lhapdf blackhat fastjet openmpi rivet pythia8 gosam libzip
 BuildRequires: cmake swig
 
 %{!?without_openloops:Requires: openloops}

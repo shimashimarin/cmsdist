@@ -3,6 +3,7 @@ Source: http://www.bzip.org/%{realversion}/bzip2-%{realversion}.tar.gz
 
 %prep
 %setup -n bzip2-%{realversion}
+sed -i 's/-Wl,-soname -Wl,libbz2.so.1.0/-Wl,-soname -Wl,libbz2.so.1/' Makefile-libbz2_so 
 sed -e 's/ -shared/ -dynamiclib/' \
     -e 's/ -Wl,-soname -Wl,[^ ]*//' \
     -e 's/libbz2\.so/libbz2.dylib/g' \
