@@ -1,7 +1,7 @@
-### RPM cms cmssw-tools 5.0
+### RPM cms cmssw-tools 6.0
 # With cmsBuild, change the above version only when a new tool is added
 
-## INSTALL_DEPENDENCIES cmsLHEtoEOSManager gcc-fixincludes cms-cat cmssw-osenv cms-git-tools SCRAMV2
+## INSTALL_DEPENDENCIES cmsLHEtoEOSManager gcc-fixincludes cms-cat cmssw-osenv cms-git-tools SCRAMV2 prmon
 ## UPLOAD_DEPENDENCIES dqmgui
 ## INCLUDE vecgeom-opt
 
@@ -15,7 +15,6 @@ Requires: celeritas
 %endif
 Requires: crab
 Requires: cmssw-wm-tools
-Requires: google-benchmark
 Requires: catch2
 Requires: starlight
 Requires: alpgen
@@ -46,6 +45,8 @@ Requires: geant4data
 Requires: g4hepem
 Requires: glimpse
 Requires: gmake
+Requires: google-benchmark
+Requires: google-test
 Requires: gsl
 Requires: highfive
 Requires: hector
